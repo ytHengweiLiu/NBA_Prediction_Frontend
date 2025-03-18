@@ -1,12 +1,12 @@
 import React from 'react';
-import './App.css';
-import TeamPrediction from './TeamPrediction';
+// import './App.css';
+import NBAPredictionDashboard from './NBAPredictionDashboard';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <TeamPrediction />
+        <NBAPredictionDashboard />
       </header>
     </div>
   );
