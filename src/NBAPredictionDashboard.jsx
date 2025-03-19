@@ -27,7 +27,8 @@ const NBAPredictionDashboard = () => {
   const [recentPredictions, setRecentPredictions] = useState([])
   const [selectedTab, setSelectedTab] = useState('prediction')
 
-  const ANALYSE_API_URL = '/dev/analyse-dev'
+  const ANALYSE_API_URL = 'https://j25ls96ohb.execute-api.us-east-1.amazonaws.com/dev/analyse-dev'
+  // '/dev/analyse-dev'
   // 'https://j25ls96ohb.execute-api.us-east-1.amazonaws.com/dev/analyse-dev'
 
   // Initialize with a sample prediction
