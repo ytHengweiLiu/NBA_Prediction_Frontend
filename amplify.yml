@@ -3,7 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - pnpm insall
+        - pnpm install
     build:
       commands:
         - pnpm run build
