@@ -32,8 +32,6 @@ const NBAPredictionDashboard = () => {
 
   // Initialize with a sample prediction
   useEffect(() => {
-    setTeam1('Memphis')
-    setTeam2('Boston')
     if (team1 && team2) {
       handlePrediction()
     }
@@ -85,7 +83,7 @@ const NBAPredictionDashboard = () => {
         throw new Error('API request failed')
       }
 
-      const result = await response.json()
+      const result = await response.data
 
       // const result = {
       //   analysis: {
@@ -96,6 +94,7 @@ const NBAPredictionDashboard = () => {
       //     analysisTimestamp: new Date().toISOString()
       //   }
       // }
+      console.log('Result: ', result)
       setPredictionResult(result)
 
       // Add to recent predictions
@@ -113,7 +112,9 @@ const NBAPredictionDashboard = () => {
         // Server responded with an error status code
         console.error('Error response data:', err.response.data)
         console.error('Error response status:', err.response.status)
-        setError(`Server error: ${err.response.status}. Please try again later.`)
+        setError(
+          `Server error: ${err.response.status}. Please try again later.`
+        )
       } else if (err.request) {
         // Request was made but no response received
         console.error('No response received:', err.request)
@@ -133,9 +134,15 @@ const NBAPredictionDashboard = () => {
     if (!predictionResult) return []
 
     const { winProbabilities } = predictionResult.analysis
+    console.log("winProbabilities: ", winProbabilities)
+    console.log(team1, team2)
+    console.log(
+      { name: team1, value: parseFloat(winProbabilities[team1]) * 100 },
+      { name: team2, value: parseFloat(winProbabilities[team2]) * 100 }
+    )
     return [
-      { name: team1, value: parseFloat(winProbabilities[team1]) },
-      { name: team2, value: parseFloat(winProbabilities[team2] * 100) }
+      { name: team1, value: parseFloat(winProbabilities[team1]) * 100 },
+      { name: team2, value: parseFloat(winProbabilities[team2]) * 100 }
     ]
   }
 
