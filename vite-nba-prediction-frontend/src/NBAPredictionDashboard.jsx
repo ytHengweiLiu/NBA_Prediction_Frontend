@@ -27,8 +27,8 @@ const NBAPredictionDashboard = () => {
   const [recentPredictions, setRecentPredictions] = useState([])
   const [selectedTab, setSelectedTab] = useState('prediction')
 
-  const ANALYSE_API_URL =
-    'https://j25ls96ohb.execute-api.us-east-1.amazonaws.com/dev/analyse-dev'
+  const ANALYSE_API_URL = '/dev/analyse-dev'
+  // 'https://j25ls96ohb.execute-api.us-east-1.amazonaws.com/dev/analyse-dev'
 
   // Initialize with a sample prediction
   useEffect(() => {
@@ -63,36 +63,39 @@ const NBAPredictionDashboard = () => {
       //   body: JSON.stringify({ team1, team2 })
       // })
 
-      const response = await axios.post(ANALYSE_API_URL, {
-        params: {
-          team1: team1,
-          team2: team2
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Headers':
-            'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-          'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-          'Access-Control-Allow-Origin': '*'
+      const response = await axios.post(
+        ANALYSE_API_URL,
+        { team1, team2 },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+          // headers: {
+          //   'Content-Type': 'application/json',
+          //   'Access-Control-Allow-Headers':
+          //     'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+          //   'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+          //   'Access-Control-Allow-Origin': '*'
+          // }
         }
-      })
+      )
       console.log('Response:', JSON.stringify(response.data, null, 4))
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error('API request failed')
       }
 
-      // const result = await response.json()
+      const result = await response.json()
 
-      const result = {
-        analysis: {
-          winProbabilities: {
-            [team1]: '12%',
-            [team2]: '78%'
-          },
-          analysisTimestamp: new Date().toISOString()
-        }
-      }
+      // const result = {
+      //   analysis: {
+      //     winProbabilities: {
+      //       [team1]: '12%',
+      //       [team2]: '78%'
+      //     },
+      //     analysisTimestamp: new Date().toISOString()
+      //   }
+      // }
       setPredictionResult(result)
 
       // Add to recent predictions
@@ -106,6 +109,20 @@ const NBAPredictionDashboard = () => {
 
       setRecentPredictions(prev => [newPrediction, ...prev].slice(0, 5))
     } catch (err) {
+      if (err.response) {
+        // Server responded with an error status code
+        console.error('Error response data:', err.response.data)
+        console.error('Error response status:', err.response.status)
+        setError(`Server error: ${err.response.status}. Please try again later.`)
+      } else if (err.request) {
+        // Request was made but no response received
+        console.error('No response received:', err.request)
+        setError('No response from server. Please check your connection.')
+      } else {
+        // Error setting up the request
+        console.error('Error message:', err.message)
+        setError(`Error: ${err.message}`)
+      }
       setError('Error fetching prediction. Please try again.')
       console.error(err)
     } finally {
@@ -117,8 +134,8 @@ const NBAPredictionDashboard = () => {
 
     const { winProbabilities } = predictionResult.analysis
     return [
-      { name: team1, value: winProbabilities[team1] * 100 },
-      { name: team2, value: winProbabilities[team2] * 100 }
+      { name: team1, value: parseFloat(winProbabilities[team1]) },
+      { name: team2, value: parseFloat(winProbabilities[team2] * 100) }
     ]
   }
 
