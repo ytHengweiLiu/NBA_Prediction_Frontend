@@ -20,18 +20,8 @@ export default defineConfig({
   //       changeOrigin: true,
   //       secure: false,
   //       ws: true,
-  //       // rewrite: (path) => path.replace(/^\/dev/, ""),
   //     },
   //   },
   //   port: 3000,
-  // },
-  // server: {
-  //   proxy: {
-  //     "/api": {
-  //       target: "https://j25ls96ohb.execute-api.us-east-1.amazonaws.com",
-  //       changeOrigin: true,
-  //       secure: false,
-  //     },
-  //   },
-  // },
+  // }
 });
