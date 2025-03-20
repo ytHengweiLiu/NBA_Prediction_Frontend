@@ -4,6 +4,8 @@
 
 This project is the frontend for a microservice application that scrapes NBA team stats from Yahoo Sports, stores the data in an S3 bucket, and provides an API to retrieve and analyze the data. The application is built with React and Vite.
 
+Deployed link: https://nba-prediction-frontend-cs68.vercel.app/
+
 ### Team Members
 
 - Katherine
