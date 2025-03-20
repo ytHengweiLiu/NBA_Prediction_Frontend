@@ -28,7 +28,7 @@ const NBAPredictionDashboard = () => {
   const [selectedTab, setSelectedTab] = useState('prediction')
 
   const ANALYSE_API_URL = '/dev/analyse-dev'
-  // 'https://j25ls96ohb.execute-api.us-east-1.amazonaws.com/dev/analyse-dev'
+  // 'https://j25ls96ohb.execute-api.us-east-1.amazonaws.com/dev/analyse-dev/'
 
   // Initialize with a sample prediction
   useEffect(() => {
@@ -134,7 +134,7 @@ const NBAPredictionDashboard = () => {
     if (!predictionResult) return []
 
     const { winProbabilities } = predictionResult.analysis
-    console.log("winProbabilities: ", winProbabilities)
+    console.log('winProbabilities: ', winProbabilities)
     console.log(team1, team2)
     console.log(
       { name: team1, value: parseFloat(winProbabilities[team1]) * 100 },
@@ -467,7 +467,7 @@ const NBAPredictionDashboard = () => {
         </main>
 
         <footer className='mt-12 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm'>
-          <p>© 2025 NBA Team Prediction | Data updated daily</p>
+          <p>© 2025 Bravo </p>
         </footer>
       </div>
     </div>
