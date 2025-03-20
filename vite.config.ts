@@ -13,25 +13,15 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    proxy: {
-      "/dev": {
-        target: "https://j25ls96ohb.execute-api.us-east-1.amazonaws.com",
-        changeOrigin: true,
-        secure: false,
-        ws: true,
-        // rewrite: (path) => path.replace(/^\/dev/, ""),
-      },
-    },
-    port: 3000,
-  },
   // server: {
   //   proxy: {
-  //     "/api": {
+  //     "/dev": {
   //       target: "https://j25ls96ohb.execute-api.us-east-1.amazonaws.com",
   //       changeOrigin: true,
   //       secure: false,
+  //       ws: true,
   //     },
   //   },
-  // },
+  //   port: 3000,
+  // }
 });
