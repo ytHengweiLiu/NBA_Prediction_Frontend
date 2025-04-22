@@ -13,7 +13,7 @@ function NBANewsFeed() {
         // setLoading(true);
         const fetchNews = async () => {
             try {
-                const response = await axios.get('http://collection-load-balancer-314015927.ap-southeast-2.elb.amazonaws.com/sportsNews')
+                const response = await axios.get('https://collection.omega-financials.com/sportsNews')
                 console.log('Response:', response.data);
 
                 if (response.data.status === 'success') {
