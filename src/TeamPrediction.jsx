@@ -11,8 +11,8 @@ const TeamPrediction = () => {
 
     const Retrieve_API_URL = "https://szzotav54l.execute-api.us-east-1.amazonaws.com/prod/retrieve";
 
-    const headers = { 
-        "Content-Type": "application/json" 
+    const headers = {
+        "Content-Type": "application/json"
     };
 
     const handleSubmit = async (event) => {
@@ -23,15 +23,15 @@ const TeamPrediction = () => {
         try {
             const response = await axios.get(Retrieve_API_URL, {
                 params: {
-                  team1Name: team1Name,
-                  team2Name: team2Name
+                    team1Name: team1Name,
+                    team2Name: team2Name
                 },
                 headers: headers
-              });
+            });
             console.log("Response:", JSON.stringify(response.data, null, 4));
             const result = response.data;
-            const team1Prediction = (result[team1Name] * 100).toFixed(1) + "%"; ; 
-            const team2Prediction = (result[team2Name] * 100).toFixed(1) + "%"; ;
+            const team1Prediction = (result[team1Name] * 100).toFixed(1) + "%";;
+            const team2Prediction = (result[team2Name] * 100).toFixed(1) + "%";;
             setteam1Prediction(team1Prediction);
             setteam2Prediction(team2Prediction);
             console.log(team1Prediction);
@@ -83,13 +83,13 @@ const TeamPrediction = () => {
 
             {error && <div style={{ color: 'red' }}>{error}</div>}
             {team1Prediction &&
-            team2Prediction && (
-                <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
-                    <h2>Prediction Results:</h2>
-                    <p><strong>{team1Name}:</strong> {team1Prediction}</p>
-                    <p><strong>{team2Name}:</strong> {team2Prediction}</p>
-                </div>
-            )}
+                team2Prediction && (
+                    <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+                        <h2>Prediction Results:</h2>
+                        <p><strong>{team1Name}:</strong> {team1Prediction}</p>
+                        <p><strong>{team2Name}:</strong> {team2Prediction}</p>
+                    </div>
+                )}
         </div>
     );
 };

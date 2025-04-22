@@ -29,8 +29,7 @@
             "@/*": [
                 "./src/*"
             ],
-        }pnpm add -D @types/node
-
+        }
     },
     "include": [
         "src"
