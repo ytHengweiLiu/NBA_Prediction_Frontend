@@ -1,3 +1,7 @@
+// This is a simple proxy server that forwards requests to the AWS API Gateway and handles CORS issues. 
+// First run `node proxyserver.js` in the terminal to start the proxy server.
+// Then run `npm run dev` in the terminal to start the app.
+
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import cors from "cors";

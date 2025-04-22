@@ -90,13 +90,6 @@ const NBAPredictionDashboard = () => {
           headers: {
             'Content-Type': 'application/json'
           }
-          // headers: {
-          //   'Content-Type': 'application/json',
-          //   'Access-Control-Allow-Headers':
-          //     'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-          //   'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-          //   'Access-Control-Allow-Origin': '*'
-          // }
         }
       )
       console.log('Response:', JSON.stringify(response.data, null, 4))
