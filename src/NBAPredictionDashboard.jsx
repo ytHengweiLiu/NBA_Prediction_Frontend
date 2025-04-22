@@ -32,12 +32,12 @@ const NBAPredictionDashboard = () => {
     // 'localhostdefault/nba-analyse-lambda-v2'
     'https://1pka1875p6.execute-api.us-east-1.amazonaws.com/default/nba-analyse-lambda-v2'
 
-  // Initialize with a sample prediction
-  useEffect(() => {
-    if (team1 && team2) {
-      handlePrediction()
-    }
-  }, [])
+  // // Initialize with a sample prediction
+  // useEffect(() => {
+  //   if (team1 && team2) {
+  //     handlePrediction()
+  //   }
+  // }, [])
 
   const handlePrediction = async () => {
     if (!team1 || !team2) {
@@ -111,9 +111,8 @@ const NBAPredictionDashboard = () => {
       //   result: result.analysis.winProbabilities,
       //   timestamp: result.analysis.analysisTimestamp
       // }
-      const newPrediction = { ...result, timestamp: Date.now() }
-
-      setRecentPredictions(prev => [newPrediction, ...prev].slice(0, 5))
+      const resultData = { ...result, team1, team2 }
+      setRecentPredictions(prev => [resultData, ...prev].slice(0, 5))
     } catch (err) {
       if (err.response) {
         // Server responded with an error status code
@@ -273,26 +272,25 @@ const NBAPredictionDashboard = () => {
 
       {/* Prediction Results */}
       {predictionResult && (
-        <div className='bg-gray-800 rounded-lg shadow-lg overflow-hidden'>
+        <div className='bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700'>
           <div className='p-6 bg-blue-900'>
             <h3 className='text-2xl font-bold text-white mb-1'>
               Prediction Results
             </h3>
-            <p className='text-gray-300'>
-              <Clock className='inline mr-1' size={16} />
-              {new Date(
-                predictionResult.timestamp 
-              ).toLocaleString()}
+            <p className='text-gray-300 flex items-center'>
+              <Clock className='mr-2' size={16} />
+              {new Date(predictionResult.timestamp).toLocaleString()}
             </p>
           </div>
 
-          <div className='p-6'>
-            <div className='grid md:grid-cols-2 gap-6'>
-              <div className='space-y-4'>
-                <h4 className='text-xl font-medium text-gray-200'>
+          <div className='p-6 space-y-8'>
+            <div className='grid md:grid-cols-2 gap-8'>
+              <div className='space-y-5'>
+                <h4 className='text-xl font-medium text-gray-200 flex items-center'>
+                  <TrendingUp className='mr-2 text-blue-400' size={20} />
                   Win Probability
                 </h4>
-                <div className='h-64'>
+                <div className='h-64 bg-gray-850 rounded-lg p-4'>
                   <ResponsiveContainer width='100%' height='100%'>
                     <PieChart>
                       <Pie
@@ -321,59 +319,70 @@ const NBAPredictionDashboard = () => {
 
               <div className='space-y-6'>
                 <div>
-                  <h4 className='text-xl font-medium text-gray-200 mb-4'>
+                  <h4 className='text-xl font-medium text-gray-200 mb-4 flex items-center'>
+                    <AlertCircle className='mr-2 text-blue-400' size={20} />
                     Analysis Summary
                   </h4>
-                  <p className='text-gray-300'>{getPredictionDescription()}</p>
+                  <div className='bg-gray-700 rounded-lg p-5'>
+                    <p className='text-gray-300'>{getPredictionDescription()}</p>
+                  </div>
                 </div>
 
-                <div className='space-y-4'>
-                  <div className='bg-gray-700 rounded-lg p-4'>
-                    <div className='flex justify-between text-sm text-gray-400 mb-1'>
-                      <span>{team1}</span>
-                      <span>{team2}</span>
+                <div className='space-y-5'>
+                  <div className='bg-gray-750 rounded-lg p-5'>
+                    <div className='flex justify-between text-sm text-gray-400 mb-2'>
+                      <span className='font-medium'>{team1}</span>
+                      <span className='font-medium'>{team2}</span>
                     </div>
-                    <div className='w-full bg-gray-600 rounded-full h-6 overflow-hidden'>
+                    <div className='w-full bg-gray-600 rounded-full h-7 overflow-hidden'>
                       <div
-                        className='h-full rounded-full'
+                        className='h-full rounded-full transition-all duration-700 ease-in-out'
                         style={{
-                          width: `${predictionResult.winning_rate *
-                            100
-                            }%`,
-                          backgroundColor:
-                            NBAConstants.TEAM_COLORS[team1] || '#3B82F6'
+                          width: `${predictionResult.winning_rate * 100}%`,
+                          backgroundColor: NBAConstants.TEAM_COLORS[team1] || '#3B82F6'
                         }}
                       />
                     </div>
-                    <div className='flex justify-between mt-1 font-bold'>
-                      <span>
-                        {formatProbability(
-                          predictionResult.winning_rate
-                        )}
+                    <div className='flex justify-between mt-3 font-bold'>
+                      <span className='text-white'>
+                        {formatProbability(predictionResult.winning_rate)}
                       </span>
-                      <span>
-                        {formatProbability(
-                          (1 - predictionResult.winning_rate)
-                        )}
+                      <span className='text-white'>
+                        {formatProbability((1 - predictionResult.winning_rate))}
                       </span>
                     </div>
-                  </div>
-
-                  <div className='bg-gray-700 rounded-lg p-4 flex items-center justify-between'>
-                    <div className='flex items-center'>
-                      <Award className='text-yellow-400 mr-2' size={24} />
-                      <span className='text-lg font-medium text-white'>Favoured Team</span>
-                    </div>
-                    <span
-                      className='text-lg font-bold'
-                      style={{
-                        color: NBAConstants.TEAM_COLORS[favouredTeam] || 'white'
-                      }}
-                    >
-                      {favouredTeam}
-                    </span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Bottom row with Model Accuracy and Favoured Team side by side */}
+            <div className='grid md:grid-cols-2 gap-8'>
+              <div className='bg-gray-700 rounded-lg p-4 flex items-center justify-between'>
+                <div className='flex items-center'>
+                  <Activity className='text-blue-400 mr-2' size={24} />
+                  <span className='text-lg font-medium text-white'>Model Accuracy</span>
+                </div>
+                <span className='text-lg font-bold text-blue-400'>
+                  {predictionResult.model_accuracy ?
+                    `${(predictionResult.model_accuracy * 100).toFixed(1)}%` :
+                    'Not available'}
+                </span>
+              </div>
+
+              <div className='bg-gray-700 rounded-lg p-4 flex items-center justify-between'>
+                <div className='flex items-center'>
+                  <Award className='text-yellow-400 mr-2' size={24} />
+                  <span className='text-lg font-medium text-white'>Favoured Team</span>
+                </div>
+                <span
+                  className='text-lg font-bold'
+                  style={{
+                    color: NBAConstants.TEAM_COLORS[favouredTeam] || 'white'
+                  }}
+                >
+                  {favouredTeam}
+                </span>
               </div>
             </div>
           </div>
@@ -417,7 +426,7 @@ const NBAPredictionDashboard = () => {
                     <div
                       className='h-full rounded-full'
                       style={{
-                        width: `${prediction.result[prediction.team1] * 100}%`,
+                        width: `${prediction.winning_rate * 100}%`,
                         backgroundColor:
                           NBAConstants.TEAM_COLORS[prediction.team1] ||
                           '#3B82F6'
@@ -428,11 +437,11 @@ const NBAPredictionDashboard = () => {
                   <div className='flex justify-between mt-2 text-sm'>
                     <span className='text-white'>
                       {prediction.team1}:{' '}
-                      {formatProbability(prediction.result[prediction.team1])}
+                      {formatProbability(prediction.winning_rate)}
                     </span>
                     <span className='text-white'>
                       {prediction.team2}:{' '}
-                      {formatProbability(prediction.result[prediction.team2])}
+                      {formatProbability(1 - prediction.winning_rate)}
                     </span>
                   </div>
                 </div>
@@ -490,7 +499,7 @@ const NBAPredictionDashboard = () => {
         </main>
 
         <footer className='mt-12 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm'>
-          <p>© 2025 NBA Team Prediction | Data updated daily</p>
+          <p>© 2025 NBA Team Prediction</p>
         </footer>
       </div>
     </div>
