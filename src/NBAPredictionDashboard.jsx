@@ -37,7 +37,7 @@ const NBAPredictionDashboard = () => {
     if (team1 && team2) {
       handlePrediction()
     }
-  })
+  }, [])
 
   const handlePrediction = async () => {
     if (!team1 || !team2) {
@@ -104,13 +104,14 @@ const NBAPredictionDashboard = () => {
       setPredictionResult(result)
 
       // Add to recent predictions
-      const newPrediction = {
-        id: Date.now(),
-        team1,
-        team2,
-        result: result.analysis.winProbabilities,
-        timestamp: result.analysis.analysisTimestamp
-      }
+      // const newPrediction = {
+      //   id: Date.now(),
+      //   team1,
+      //   team2,
+      //   result: result.analysis.winProbabilities,
+      //   timestamp: result.analysis.analysisTimestamp
+      // }
+      const newPrediction = { ...result, timestamp: Date.now() }
 
       setRecentPredictions(prev => [newPrediction, ...prev].slice(0, 5))
     } catch (err) {
@@ -136,41 +137,38 @@ const NBAPredictionDashboard = () => {
       setIsLoading(false)
     }
   }
-  const getPieChartData = () => {
-    if (!predictionResult) return []
 
-    const { winProbabilities } = predictionResult.analysis
-    console.log('winProbabilities: ', winProbabilities)
-    console.log(team1, team2)
-    console.log(
-      { name: team1, value: parseFloat(winProbabilities[team1]) * 100 },
-      { name: team2, value: parseFloat(winProbabilities[team2]) * 100 }
-    )
+  const getPieChartData = () => {
+    if (!predictionResult) return [];
+
     return [
-      { name: team1, value: parseFloat(winProbabilities[team1]) * 100 },
-      { name: team2, value: parseFloat(winProbabilities[team2]) * 100 }
-    ]
-  }
+      { name: team1, value: predictionResult.winning_rate * 100 },
+      { name: team2, value: (1 - predictionResult.winning_rate) * 100 }
+    ];
+  };
 
   const formatProbability = value => {
     return `${(value * 100).toFixed(1)}%`
   }
 
   const getPredictionDescription = () => {
-    if (!predictionResult) return ''
+    if (!predictionResult) return '';
 
-    const { winProbabilities } = predictionResult.analysis
-    const team1Prob = winProbabilities[team1]
-    const team2Prob = winProbabilities[team2]
+    const diff = Math.abs(predictionResult.winning_rate - 0.5);
 
-    if (Math.abs(team1Prob - team2Prob) < 0.1) {
-      return 'This looks like a very close matchup. Either team could win this game.'
-    } else if (team1Prob > team2Prob) {
-      return `${team1} has a significant advantage over ${team2} and is favoured to win.`
+    if (diff < 0.1) {
+      return 'This looks like a very close matchup. Either team could win this game.';
+    } else if (predictionResult.winning_rate > 0.5) {
+      return `${team1} is predicted to win with a winning rate of ${(predictionResult.winning_rate * 100).toFixed(1)}%.`;
     } else {
-      return `${team2} has a significant advantage over ${team1} and is favoured to win.`
+      return `${team2} is predicted to win with a winning rate of ${((1 - predictionResult.winning_rate) * 100).toFixed(1)}%.`;
     }
-  }
+  };
+
+  const favouredTeam = predictionResult
+    ? (predictionResult.winning_rate >= 0.5 ? team1 : team2)
+    : '';
+
 
   const renderPredictionContent = () => (
     <div className='space-y-8'>
@@ -283,7 +281,7 @@ const NBAPredictionDashboard = () => {
             <p className='text-gray-300'>
               <Clock className='inline mr-1' size={16} />
               {new Date(
-                predictionResult.analysis.analysisTimestamp
+                predictionResult.timestamp 
               ).toLocaleString()}
             </p>
           </div>
@@ -305,16 +303,12 @@ const NBAPredictionDashboard = () => {
                         outerRadius={80}
                         fill='#8884d8'
                         dataKey='value'
-                        label={({ name, percent }) =>
-                          `${name}: ${(percent * 100).toFixed(1)}%`
-                        }
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
                       >
                         {getPieChartData().map((entry, index) => (
                           <Cell
                             key={`cell-${index}`}
-                            fill={
-                              NBAConstants.TEAM_COLORS[entry.name] || '#8884d8'
-                            }
+                            fill={NBAConstants.TEAM_COLORS[entry.name] || '#8884d8'}
                           />
                         ))}
                       </Pie>
@@ -343,7 +337,7 @@ const NBAPredictionDashboard = () => {
                       <div
                         className='h-full rounded-full'
                         style={{
-                          width: `${predictionResult.analysis.winProbabilities[team1] *
+                          width: `${predictionResult.winning_rate *
                             100
                             }%`,
                           backgroundColor:
@@ -354,12 +348,12 @@ const NBAPredictionDashboard = () => {
                     <div className='flex justify-between mt-1 font-bold'>
                       <span>
                         {formatProbability(
-                          predictionResult.analysis.winProbabilities[team1]
+                          predictionResult.winning_rate
                         )}
                       </span>
                       <span>
                         {formatProbability(
-                          predictionResult.analysis.winProbabilities[team2]
+                          (1 - predictionResult.winning_rate)
                         )}
                       </span>
                     </div>
@@ -368,26 +362,15 @@ const NBAPredictionDashboard = () => {
                   <div className='bg-gray-700 rounded-lg p-4 flex items-center justify-between'>
                     <div className='flex items-center'>
                       <Award className='text-yellow-400 mr-2' size={24} />
-                      <span className='text-lg font-medium text-white'>
-                        Favoured Team
-                      </span>
+                      <span className='text-lg font-medium text-white'>Favoured Team</span>
                     </div>
                     <span
                       className='text-lg font-bold'
                       style={{
-                        color:
-                          NBAConstants.TEAM_COLORS[
-                          predictionResult.analysis.winProbabilities[team1] >
-                            predictionResult.analysis.winProbabilities[team2]
-                            ? team1
-                            : team2
-                          ] || 'white'
+                        color: NBAConstants.TEAM_COLORS[favouredTeam] || 'white'
                       }}
                     >
-                      {predictionResult.analysis.winProbabilities[team1] >
-                        predictionResult.analysis.winProbabilities[team2]
-                        ? team1
-                        : team2}
+                      {favouredTeam}
                     </span>
                   </div>
                 </div>
