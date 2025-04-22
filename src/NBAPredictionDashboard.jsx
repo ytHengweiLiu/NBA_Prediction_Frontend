@@ -19,30 +19,25 @@ import {
 import * as NBAConstants from './NBAConstants.tsx'
 
 const NBAPredictionDashboard = () => {
-  const [team1, setTeam1] = useState('Cleveland')
-  const [team2, setTeam2] = useState('Memphis')
+  const [team1, setTeam1] = useState('Boston Celtics')
+  const [team2, setTeam2] = useState('Cleveland Cavaliers')
   const [isLoading, setIsLoading] = useState(false)
   const [predictionResult, setPredictionResult] = useState(null)
   const [error, setError] = useState(null)
   const [recentPredictions, setRecentPredictions] = useState([])
   const [selectedTab, setSelectedTab] = useState('prediction')
+  const [homeTeam, setHomeTeam] = useState(0) // 0 = neutral, 1 = team1 is home, 2 = team2 is home
 
-  const ANALYSE_API_URL =
-    // production environment
-    'https://1gz0wm5412.execute-api.us-east-1.amazonaws.com/prod/analyse/'
-
-  // dev environment
-  // 'https://j25ls96ohb.execute-api.us-east-1.amazonaws.com/dev/analyse-dev/'
-
-  // for localhost
-  // '/dev/analyse-dev/'
+  const BASE_URL =
+    // 'localhostdefault/nba-analyse-lambda-v2'
+    'https://1pka1875p6.execute-api.us-east-1.amazonaws.com/default/nba-analyse-lambda-v2'
 
   // Initialize with a sample prediction
   useEffect(() => {
     if (team1 && team2) {
       handlePrediction()
     }
-  }, [])
+  })
 
   const handlePrediction = async () => {
     if (!team1 || !team2) {
@@ -59,18 +54,38 @@ const NBAPredictionDashboard = () => {
     setError(null)
 
     try {
-      // Real API call
-      // const response = await fetch('https://your-api.com/predict', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
+      // Home court advantage: 1 if team1 is home
+      // or 0 if netural court or if team2 is home
+      const homeValue = homeTeam === 1 ? 1 : 0
+      const PARAMS = {
+        team1: NBAConstants.TEAM_ABBR[team1],
+        team2: NBAConstants.TEAM_ABBR[team2],
+        home: homeValue
+      }
+      // // Build the query string
+      // const queryParams = new URLSearchParams(PARAMS).toString();
+
+      // // Use local proxy with query parameters
+      // const response = await axios.post(
+      //   `http://localhost:3001/default/nba-analyse-lambda-v2?${queryParams}`,
+      //   {
+      //     team1: NBAConstants.TEAM_ABBR[team1],
+      //     team2: NBAConstants.TEAM_ABBR[team2],
+      //     home: homeValue
       //   },
-      //   body: JSON.stringify({ team1, team2 })
-      // })
+      //   { headers: { 'Content-Type': 'application/json' } }
+      // )
+
+      const ANALYSE_API_URL = new URL(BASE_URL)
+      Object.keys(PARAMS).forEach(key => {
+        ANALYSE_API_URL.searchParams.append(key, PARAMS[key])
+      })
+      console.log('ANALYSE_API_URL:', ANALYSE_API_URL.toString())
 
       const response = await axios.post(
         ANALYSE_API_URL,
-        { team1, team2 },
+        {},
+        // { team1, team2 },
         {
           headers: {
             'Content-Type': 'application/json'
@@ -92,15 +107,6 @@ const NBAPredictionDashboard = () => {
 
       const result = await response.data
 
-      // const result = {
-      //   analysis: {
-      //     winProbabilities: {
-      //       [team1]: '12%',
-      //       [team2]: '78%'
-      //     },
-      //     analysisTimestamp: new Date().toISOString()
-      //   }
-      // }
       console.log('Result: ', result)
       setPredictionResult(result)
 
@@ -215,6 +221,43 @@ const NBAPredictionDashboard = () => {
         </div>
       </div>
 
+      {/* Home Court Advantage Selection */}
+      <div className='bg-gray-800 rounded-lg p-4 border border-gray-700'>
+        <h3 className='text-lg font-medium text-gray-200'>Home Court Advantage</h3>
+        <div className='flex flex-col space-y-3'>
+          <label className='flex items-center space-x-3 p-2 hover:bg-gray-700 rounded-lg cursor-pointer'>
+            <input
+              type='radio'
+              name='homeTeam'
+              checked={homeTeam === 0}
+              onChange={() => setHomeTeam(0)}
+              className='form-radio text-blue-500'
+            />
+            <span className='text-gray-300'>Neutral court (no home advantage)</span>
+          </label>
+          <label className='flex items-center space-x-3 p-2 hover:bg-gray-700 rounded-lg cursor-pointer'>
+            <input
+              type='radio'
+              name='homeTeam'
+              checked={homeTeam === 1}
+              onChange={() => setHomeTeam(1)}
+              className='form-radio text-blue-500'
+            />
+            <span className='text-gray-300'>{team1} has home court advantage</span>
+          </label>
+          <label className='flex items-center space-x-3 p-2 hover:bg-gray-700 rounded-lg cursor-pointer'>
+            <input
+              type='radio'
+              name='homeTeam'
+              checked={homeTeam === 2}
+              onChange={() => setHomeTeam(2)}
+              className='form-radio text-blue-500'
+            />
+            <span className='text-gray-300'>{team2} has home court advantage</span>
+          </label>
+        </div>
+      </div>
+
       <button
         onClick={handlePrediction}
         disabled={isLoading}
@@ -307,10 +350,9 @@ const NBAPredictionDashboard = () => {
                       <div
                         className='h-full rounded-full'
                         style={{
-                          width: `${
-                            predictionResult.analysis.winProbabilities[team1] *
+                          width: `${predictionResult.analysis.winProbabilities[team1] *
                             100
-                          }%`,
+                            }%`,
                           backgroundColor:
                             NBAConstants.TEAM_COLORS[team1] || '#3B82F6'
                         }}
@@ -342,15 +384,15 @@ const NBAPredictionDashboard = () => {
                       style={{
                         color:
                           NBAConstants.TEAM_COLORS[
-                            predictionResult.analysis.winProbabilities[team1] >
+                          predictionResult.analysis.winProbabilities[team1] >
                             predictionResult.analysis.winProbabilities[team2]
-                              ? team1
-                              : team2
+                            ? team1
+                            : team2
                           ] || 'white'
                       }}
                     >
                       {predictionResult.analysis.winProbabilities[team1] >
-                      predictionResult.analysis.winProbabilities[team2]
+                        predictionResult.analysis.winProbabilities[team2]
                         ? team1
                         : team2}
                     </span>
@@ -446,22 +488,20 @@ const NBAPredictionDashboard = () => {
         <main>
           <div className='flex border-b border-gray-700 mb-6'>
             <button
-              className={`py-3 px-6 font-medium flex items-center ${
-                selectedTab === 'prediction'
-                  ? 'text-blue-400 border-b-2 border-blue-400'
-                  : 'text-gray-400 hover:text-gray-300'
-              }`}
+              className={`py-3 px-6 font-medium flex items-center ${selectedTab === 'prediction'
+                ? 'text-blue-400 border-b-2 border-blue-400'
+                : 'text-gray-400 hover:text-gray-300'
+                }`}
               onClick={() => setSelectedTab('prediction')}
             >
               <TrendingUp className='mr-2' size={20} />
               Prediction
             </button>
             <button
-              className={`py-3 px-6 font-medium flex items-center ${
-                selectedTab === 'history'
-                  ? 'text-blue-400 border-b-2 border-blue-400'
-                  : 'text-gray-400 hover:text-gray-300'
-              }`}
+              className={`py-3 px-6 font-medium flex items-center ${selectedTab === 'history'
+                ? 'text-blue-400 border-b-2 border-blue-400'
+                : 'text-gray-400 hover:text-gray-300'
+                }`}
               onClick={() => setSelectedTab('history')}
             >
               <Activity className='mr-2' size={20} />
