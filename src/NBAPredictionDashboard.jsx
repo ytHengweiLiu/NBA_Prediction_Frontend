@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import {
   PieChart,
@@ -17,6 +17,7 @@ import {
   Activity
 } from 'lucide-react'
 import * as NBAConstants from './NBAConstants.tsx'
+import NBANewsFeed from './NBANewsFeed.jsx'
 
 const NBAPredictionDashboard = () => {
   const [team1, setTeam1] = useState('Boston Celtics')
@@ -496,6 +497,9 @@ const NBAPredictionDashboard = () => {
 
           {selectedTab === 'prediction' && renderPredictionContent()}
           {selectedTab === 'history' && renderHistoryContent()}
+          <div className="mt-8">
+            <NBANewsFeed />
+          </div>
         </main>
 
         <footer className='mt-12 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm'>
