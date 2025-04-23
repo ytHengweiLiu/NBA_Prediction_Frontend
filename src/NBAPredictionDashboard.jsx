@@ -20,7 +20,7 @@ import * as NBAConstants from './NBAConstants.tsx'
 import NBANewsFeed from './NBANewsFeed.jsx'
 
 const NBAPredictionDashboard = () => {
-  const [team1, setTeam1] = useState('Boston Celtics')
+  const [team1, setTeam1] = useState('Los Angeles Lakers')
   const [team2, setTeam2] = useState('Cleveland Cavaliers')
   const [isLoading, setIsLoading] = useState(false)
   const [predictionResult, setPredictionResult] = useState(null)
@@ -29,9 +29,8 @@ const NBAPredictionDashboard = () => {
   const [selectedTab, setSelectedTab] = useState('prediction')
   const [homeTeam, setHomeTeam] = useState(0) // 0 = neutral, 1 = team1 is home, 2 = team2 is home
 
-  const BASE_URL =
-    // 'localhostdefault/nba-analyse-lambda-v2'
-    'https://1pka1875p6.execute-api.us-east-1.amazonaws.com/default/nba-analyse-lambda-v2'
+  const COLLECT_URL = 'https://yetriidc3m.execute-api.us-east-1.amazonaws.com/default/nba-collection-lambda-v2'
+  const ANALYSE_URL = 'https://1pka1875p6.execute-api.us-east-1.amazonaws.com/default/nba-analyse-lambda-v2'
 
   // // Initialize with a sample prediction
   // useEffect(() => {
@@ -55,38 +54,49 @@ const NBAPredictionDashboard = () => {
     setError(null)
 
     try {
-      // Home court advantage: 1 if team1 is home
-      // or 0 if netural court or if team2 is home
+      // Home court advantage: 1 if team1 is home, 0 if team2 is home
       const homeValue = homeTeam === 1 ? 1 : 0
-      const PARAMS = {
+      const COLLECT_PARAMS = {
+        team1: NBAConstants.TEAM_ABBR[team1],
+        team2: NBAConstants.TEAM_ABBR[team2],
+      }
+      const ANALYSE_PARAMS = {
         team1: NBAConstants.TEAM_ABBR[team1],
         team2: NBAConstants.TEAM_ABBR[team2],
         home: homeValue
       }
-      // // Build the query string
-      // const queryParams = new URLSearchParams(PARAMS).toString();
 
-      // // Use local proxy with query parameters
-      // const response = await axios.post(
-      //   `http://localhost:3001/default/nba-analyse-lambda-v2?${queryParams}`,
-      //   {
-      //     team1: NBAConstants.TEAM_ABBR[team1],
-      //     team2: NBAConstants.TEAM_ABBR[team2],
-      //     home: homeValue
-      //   },
-      //   { headers: { 'Content-Type': 'application/json' } }
-      // )
+      const COLLECT_API_URL = new URL(COLLECT_URL)
+      Object.keys(COLLECT_PARAMS).forEach(key => {
+        COLLECT_API_URL.searchParams.append(key, COLLECT_PARAMS[key])
+      })
+      console.log('COLLECT_API_URL:', COLLECT_API_URL.toString())
 
-      const ANALYSE_API_URL = new URL(BASE_URL)
-      Object.keys(PARAMS).forEach(key => {
-        ANALYSE_API_URL.searchParams.append(key, PARAMS[key])
+      const collect_response = await axios.post(
+        COLLECT_API_URL,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      console.log('Response:', JSON.stringify(collect_response.data, null, 4))
+
+      if (collect_response.status !== 200) {
+        throw new Error('API request failed')
+      }
+      console.log('COLLECT Result: ', collect_response.data)
+
+      const ANALYSE_API_URL = new URL(ANALYSE_URL)
+      Object.keys(ANALYSE_PARAMS).forEach(key => {
+        ANALYSE_API_URL.searchParams.append(key, ANALYSE_PARAMS[key])
       })
       console.log('ANALYSE_API_URL:', ANALYSE_API_URL.toString())
 
       const response = await axios.post(
         ANALYSE_API_URL,
         {},
-        // { team1, team2 },
         {
           headers: {
             'Content-Type': 'application/json'
@@ -220,16 +230,6 @@ const NBAPredictionDashboard = () => {
             <input
               type='radio'
               name='homeTeam'
-              checked={homeTeam === 0}
-              onChange={() => setHomeTeam(0)}
-              className='form-radio text-blue-500'
-            />
-            <span className='text-gray-300'>Neutral court (no home advantage)</span>
-          </label>
-          <label className='flex items-center space-x-3 p-2 hover:bg-gray-700 rounded-lg cursor-pointer'>
-            <input
-              type='radio'
-              name='homeTeam'
               checked={homeTeam === 1}
               onChange={() => setHomeTeam(1)}
               className='form-radio text-blue-500'
@@ -241,7 +241,7 @@ const NBAPredictionDashboard = () => {
               type='radio'
               name='homeTeam'
               checked={homeTeam === 2}
-              onChange={() => setHomeTeam(2)}
+              onChange={() => setHomeTeam(0)}
               className='form-radio text-blue-500'
             />
             <span className='text-gray-300'>{team2} has home court advantage</span>
