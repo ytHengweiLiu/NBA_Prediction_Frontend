@@ -301,8 +301,27 @@ const NBAPredictionDashboard = () => {
                         labelLine={false}
                         outerRadius={80}
                         fill='#8884d8'
-                        dataKey='value'
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                        // dataKey='value'
+                        label={({ cx, cy, midAngle, outerRadius, percent, name }) => {
+                          const RADIAN = Math.PI / 180;
+                          // Position the label outside the slice
+                          const radius = outerRadius * 1.2;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="white"
+                              textAnchor={x > cx ? 'start' : 'end'}
+                              dominantBaseline="central"
+
+                            >
+                              {`${name}: ${(percent * 100).toFixed(1)}%`}
+                            </text>
+                          );
+                        }}
                       >
                         {getPieChartData().map((entry, index) => (
                           <Cell
@@ -311,8 +330,13 @@ const NBAPredictionDashboard = () => {
                           />
                         ))}
                       </Pie>
-                      <Tooltip formatter={value => `${value.toFixed(1)}%`} />
-                      <Legend />
+                      <Tooltip
+                        formatter={value => `${value.toFixed(1)}%`}
+                      />
+                      {/* <Legend
+                        formatter={(value) => <span style={{ color: 'white' }}>{value}</span>}
+                        wrapperStyle={{ padding: '10px' }}
+                      /> */}
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -379,7 +403,7 @@ const NBAPredictionDashboard = () => {
                 <span
                   className='text-lg font-bold'
                   style={{
-                    color: 'white' 
+                    color: 'white'
                     // || NBAConstants.TEAM_COLORS[favouredTeam]
                   }}
                 >
