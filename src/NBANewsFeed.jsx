@@ -39,10 +39,10 @@ function NBANewsFeed() {
 
     if (loading) return (
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-            <h3 className="text-lg font-medium text-gray-200 flex items-center mb-2">
+            <h2 className="text-lg font-medium text-gray-200 flex items-center mb-2">
                 <Newspaper className="mr-2 text-blue-400" size={20} />
                 Latest NBA News
-            </h3>
+            </h2>
             <div className="flex justify-center p-4">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
             </div>
@@ -51,10 +51,10 @@ function NBANewsFeed() {
 
     if (error) return (
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-            <h3 className="text-lg font-medium text-gray-200 flex items-center mb-2">
+            <h2 className="text-lg font-medium text-gray-200 flex items-center mb-2">
                 <Newspaper className="mr-2 text-blue-400" size={20} />
                 Latest NBA News
-            </h3>
+            </h2>
             <p className="text-red-400">Failed to load news</p>
         </div>
     );
@@ -63,10 +63,10 @@ function NBANewsFeed() {
 
     return (
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-            <h3 className="text-lg font-medium text-gray-200 flex items-center mb-2">
+            <h2 className="text-lg font-medium text-gray-200 flex items-center mb-2">
                 <Newspaper className="mr-2 text-blue-400" size={20} />
                 Latest NBA News
-            </h3>
+            </h2>
 
             <div className="flex space-x-3">
                 {news.length > 0 ? news.map((item, index) => (

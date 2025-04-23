@@ -224,7 +224,7 @@ const NBAPredictionDashboard = () => {
 
       {/* Home Court Advantage Selection */}
       <div className='bg-gray-800 rounded-lg p-4 border border-gray-700'>
-        <h3 className='text-lg font-medium text-gray-200'>Home Court Advantage</h3>
+        <h2 className='text-lg font-medium text-gray-200'>Home Court Advantage</h2>
         <div className='flex flex-col space-y-3'>
           <label className='flex items-center space-x-3 p-2 hover:bg-gray-700 rounded-lg cursor-pointer'>
             <input
@@ -275,9 +275,9 @@ const NBAPredictionDashboard = () => {
       {predictionResult && (
         <div className='bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700'>
           <div className='p-6 bg-blue-900'>
-            <h3 className='text-2xl font-bold text-white mb-1'>
+            <h2 className='text-2xl font-bold text-white mb-1'>
               Prediction Results
-            </h3>
+            </h2>
             <p className='text-gray-300 flex items-center'>
               <Clock className='mr-2' size={16} />
               {new Date(predictionResult.timestamp).toLocaleString()}
@@ -421,7 +421,7 @@ const NBAPredictionDashboard = () => {
     <div className='space-y-8'>
       <div className='bg-gray-800 rounded-lg shadow-lg overflow-hidden'>
         <div className='p-6 bg-gradient-to-r from-amber-900 to-orange-900'>
-          <h3 className='text-2xl font-bold text-white'>Recent Predictions</h3>
+          <h2 className='text-2xl font-bold text-white'>Recent Predictions</h2>
           <p className='text-gray-300'>Your most recent team analyses</p>
         </div>
 
@@ -527,7 +527,7 @@ const NBAPredictionDashboard = () => {
           </div>
         </main>
 
-        <footer className='mt-12 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm'>
+        <footer className='mt-12 pt-6 border-t border-gray-800 text-center text-gray-400 text-sm'>
           <p>© 2025 NBA Team Prediction</p>
         </footer>
       </div>
