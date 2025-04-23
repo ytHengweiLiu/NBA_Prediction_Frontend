@@ -240,7 +240,7 @@ const NBAPredictionDashboard = () => {
             <input
               type='radio'
               name='homeTeam'
-              checked={homeTeam === 2}
+              checked={homeTeam === 0}
               onChange={() => setHomeTeam(0)}
               className='form-radio text-blue-500'
             />
