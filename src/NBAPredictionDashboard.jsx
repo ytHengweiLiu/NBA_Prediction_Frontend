@@ -27,7 +27,7 @@ const NBAPredictionDashboard = () => {
   const [error, setError] = useState(null)
   const [recentPredictions, setRecentPredictions] = useState([])
   const [selectedTab, setSelectedTab] = useState('prediction')
-  const [homeTeam, setHomeTeam] = useState(0) // 0 = neutral, 1 = team1 is home, 2 = team2 is home
+  const [homeTeam, setHomeTeam] = useState(1) // 1 = team1 is home, 0 = team2 is home
 
   const COLLECT_URL = 'https://yetriidc3m.execute-api.us-east-1.amazonaws.com/default/nba-collection-lambda-v2'
   const ANALYSE_URL = 'https://1pka1875p6.execute-api.us-east-1.amazonaws.com/default/nba-analyse-lambda-v2'
