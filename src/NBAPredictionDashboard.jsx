@@ -379,7 +379,8 @@ const NBAPredictionDashboard = () => {
                 <span
                   className='text-lg font-bold'
                   style={{
-                    color: NBAConstants.TEAM_COLORS[favouredTeam] || 'white'
+                    color: 'white' 
+                    // || NBAConstants.TEAM_COLORS[favouredTeam]
                   }}
                 >
                   {favouredTeam}
